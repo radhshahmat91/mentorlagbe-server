@@ -109,6 +109,9 @@ async function main() {
   for (const id of new Set(Object.values(tuitionIds))) await recomputeRating(id);
   console.log(`• applications ready: ${applications.length} (${reviewTouched.size} tuitions reviewed)`);
 
+  // Spread the Pro payments over the last five months so the admin revenue chart has a history.
+  // Each one happens after that member joined (see `joined` in seed-data.js).
+  const PAID_DAYS_AGO = { t02: 128, t03: 101, t06: 74, s02: 52, s09: 30, s12: 12, s15: 4 };
   for (const [n, spec] of [...tutors, ...students].filter((u) => u.plan === 'pro').entries()) {
     const doc = tutorDocs[spec.key] ?? studentDocs[spec.key];
     const role = doc.role;
@@ -118,7 +121,7 @@ async function main() {
       {
         $set: {
           userEmail: doc.email, userName: doc.name, userRole: role, planName: PLAN_NAMES[role], amount: PRO_PRICE_USD[role],
-          currency: 'usd', transactionId: `pi_3S${hex(n + 31, 21)}`, paymentStatus: 'paid', paidAt: ago(8 + n * 6, 5),
+          currency: 'usd', transactionId: `pi_3S${hex(n + 31, 21)}`, paymentStatus: 'paid', paidAt: ago(PAID_DAYS_AGO[spec.key] ?? 8 + n * 6, 5),
         },
       },
       { upsert: true },

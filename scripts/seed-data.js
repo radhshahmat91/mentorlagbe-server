@@ -49,9 +49,9 @@ export const students = [
   { key: 's11', name: 'Maisha Khan', email: 'maisha.khan@example.com', password: other, plan: 'free', phone: '+8801710000011', joined: 37, bio: 'SSC candidate in Sylhet.' },
   { key: 's12', name: 'Tanvir Islam', email: 'tanvir.islam@example.com', password: other, plan: 'pro', phone: '+8801710000012', joined: 34, bio: 'Curious about web development.' },
   { key: 's13', name: 'Nafisa Chowdhury', email: 'nafisa.chowdhury@example.com', password: other, plan: 'free', phone: '+8801710000013', joined: 31, bio: 'Medical admission aspirant.' },
-  { key: 's14', name: 'Ayman Sadiq', email: 'ayman.sadiq@example.com', password: other, plan: 'free', phone: '+8801710000014', joined: 28, bio: '' },
-  { key: 's15', name: 'Priyanka Das', email: 'priyanka.das@example.com', password: other, plan: 'pro', phone: '+8801710000015', joined: 25, bio: 'Class 7 student who needs a patient maths tutor.' },
-  { key: 's16', name: 'Zahid Hasan', email: 'zahid.hasan@example.com', password: other, plan: 'free', phone: '+8801710000016', joined: 20, bio: '' },
+  { key: 's14', name: 'Ayman Sadiq', email: 'ayman.sadiq@example.com', password: other, plan: 'free', phone: '+8801710000014', joined: 20, bio: '' },
+  { key: 's15', name: 'Priyanka Das', email: 'priyanka.das@example.com', password: other, plan: 'pro', phone: '+8801710000015', joined: 13, bio: 'Class 7 student who needs a patient maths tutor.' },
+  { key: 's16', name: 'Zahid Hasan', email: 'zahid.hasan@example.com', password: other, plan: 'free', phone: '+8801710000016', joined: 8, bio: '' },
 ];
 
 // `no` is the 1-based tuition number used by `applications` and `bookmarks` below.
