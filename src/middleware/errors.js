@@ -28,13 +28,25 @@ export function errorHandler(err, req, res, next) {
     message = 'That record already exists';
     code = 'DUPLICATE';
   } else if (typeof err.type === 'string' && err.type.startsWith('Stripe')) {
-    status = err.statusCode && err.statusCode < 500 ? err.statusCode : 502;
     code = 'STRIPE_ERROR';
+    // Only errors the caller can act on keep their own status (bad session id, declined card, rate limit).
+    // Anything else is OUR problem: Stripe is unreachable, or our key is wrong or lacks permission. Those must
+    // never surface as 401/403, which the web app reads as "your login expired" or "wrong role".
+    if ([400, 402, 404, 409, 429].includes(err.statusCode)) {
+      status = err.statusCode;
+    } else {
+      status = 502;
+      message =
+        err.type === 'StripeAuthenticationError' || err.type === 'StripePermissionError'
+          ? 'Payments are not set up correctly on the server yet.'
+          : 'We could not reach Stripe just now. Please try again in a moment.';
+    }
   }
 
   if (status >= 500) {
     if (!env.isTest) console.error(err);
-    if (env.isProd) message = 'Something went wrong on our side. Please try again.';
+    // Stripe messages above are already safe to show; anything else is replaced in production.
+    if (env.isProd && code !== 'STRIPE_ERROR') message = 'Something went wrong on our side. Please try again.';
   }
 
   res.status(status).json({ message, ...(code && { code }), ...(err.errors && { errors: err.errors }) });

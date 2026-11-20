@@ -446,6 +446,38 @@ test('checkout + verify (fallback to the webhook), foreign sessions and already-
   assert.ok(adminTx.body.items.some((p) => p.stripeSessionId === session.id));
 });
 
+test('stripe failures become a friendly 502 and never leak as 401/403', async () => {
+  const student = await makeUser('student');
+  const failure = (type, statusCode, message) => Object.assign(new Error(message), { type, ...(statusCode && { statusCode }) });
+  const cases = [
+    [failure('StripeConnectionError', undefined, 'An error occurred with our connection to Stripe. Request was retried 2 times.'), 502],
+    [failure('StripeAuthenticationError', 401, 'Invalid API Key provided: sk_test_***abcd'), 502],
+    [failure('StripePermissionError', 403, 'The provided key does not have the required permissions'), 502],
+    [failure('StripeAPIError', 500, 'Stripe had a problem'), 502],
+    [failure('StripeRateLimitError', 429, 'Too many requests'), 429],
+    [failure('StripeInvalidRequestError', 404, 'No such checkout.session'), 404],
+  ];
+  for (const [error, expected] of cases) {
+    const throwing = async () => { throw error; };
+    const flaky = createApp({ stripe: { ...fakeStripe, checkout: { sessions: { create: throwing, retrieve: throwing } } }, uploadImage }).listen(0);
+    const url = `http://127.0.0.1:${flaky.address().port}`;
+    try {
+      for (const [method, path] of [['POST', '/api/payments/checkout'], ['GET', '/api/payments/verify?session_id=cs_test_abcdefghij']]) {
+        const res = await fetch(url + path, { method, headers: { authorization: `Bearer ${student.jwt}` } });
+        const body = await res.json();
+        assert.equal(res.status, expected, `${error.type} on ${path}`);
+        assert.equal(body.code, 'STRIPE_ERROR');
+        if (expected === 502) {
+          assert.match(body.message, /could not reach Stripe|not set up correctly/i);
+          assert.doesNotMatch(body.message, /sk_test|API Key|retried|permissions/i);
+        }
+      }
+    } finally {
+      flaky.close();
+    }
+  }
+});
+
 // ---- uploads, stats, platform -------------------------------------------------------------------
 test('image upload validation and success (fake ImgBB)', async () => {
   const user = await makeUser('tutor');
