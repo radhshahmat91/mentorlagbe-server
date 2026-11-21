@@ -25,12 +25,12 @@ The Next.js front end lives in the sibling repository **`mentorlagbe-client`**.
 - **Moderation workflow.** New tuitions start as `pending`; only `approved` + `isActive` tuitions are public. Editing a rejected post sends it back to `pending`.
 - **Free vs Pro rules.** Free tutors can create **2** tuitions (`403 PLAN_LIMIT` afterwards); Pro tutors are unlimited and get a verified badge. Applications from Pro students are flagged `isPriority` and listed first for tutors.
 - **Applications.** Student-only apply, duplicate protection (unique index + `409 DUPLICATE_APPLICATION`), cancel while pending, tutor accept / reject, and one review per accepted application with automatic rating aggregation.
-- **Stripe Checkout + webhook.** One shared, idempotent fulfilment function is used by both the signed webhook and the `GET /api/payments/verify` fallback, so a payment is recorded and the plan upgraded exactly once — even if both fire.
+- **Stripe Checkout + webhook.** One shared, idempotent fulfilment function is used by both the signed webhook and the `GET /api/payments/verify` fallback, so a payment is recorded and the plan upgraded exactly once — even if both fire. Stripe failures are mapped to a friendly `502` (a wrong or restricted key is never passed on as `401`/`403`, which the web app would read as an expired login).
 - **ImgBB uploads.** `POST /api/uploads/image` proxies images to ImgBB so the API key never reaches the browser (PNG / JPEG / WebP / GIF, 5 MB).
 - **Bookmarks, reviews, public stats**, admin dashboard statistics (revenue and sign-ups for the last six months), health check and clean JSON errors (`422` validation errors come with a field map).
 - **Secure by default:** helmet, strict CORS allow-list, 5 MB upload cap, zod validation on every body, secrets only in environment variables.
 - **Seed script** with 12 tutors, 16 students, 22 tuitions in every moderation state, 38 applications, reviews and Pro payments.
-- **15 integration tests** that run against a throwaway database with fake Stripe / ImgBB clients.
+- **16 integration tests** that run against a throwaway database with fake Stripe / ImgBB clients.
 
 ---
 
