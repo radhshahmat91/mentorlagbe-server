@@ -6,8 +6,8 @@ The Next.js front end lives in the sibling repository **`mentorlagbe-client`**.
 
 | | |
 |---|---|
-| **Live API** | `https://YOUR-SERVER.vercel.app` _(add after deploying)_ |
-| **Live site** | `https://YOUR-CLIENT.vercel.app` _(add after deploying)_ |
+| **Live API** | https://mentorlagbe-server-q3q2.onrender.com |
+| **Live site** | https://mentorlagbe-client-seven.vercel.app |
 | **Admin login** | `admin@mentorlagbe.com` / `Admin@123456` |
 | **Tutor login** | `tutor@mentorlagbe.com` / `Tutor@123456` |
 | **Student login** | `student@mentorlagbe.com` / `Student@123456` |
