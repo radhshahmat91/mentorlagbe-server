@@ -1,5 +1,8 @@
 // Usage: npm run seed            (idempotent upsert)
 //        npm run seed -- --fresh (drops users, tuitions, applications, payments and BetterAuth data first)
+import dns from "node:dns";
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
 import { client, db, Applications, Payments, Tuitions, Users, ensureIndexes } from '../src/config/db.js';
 import { env } from '../src/config/env.js';
 import { auth } from '../src/lib/auth.js';
